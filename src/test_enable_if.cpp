@@ -13,6 +13,9 @@ template <typename T>
 struct enable_if<true, T> {
     typedef T type;
 };
+
+template <bool B, typename T = void>
+using enable_if_t = typename enable_if<B, T>::type;
 }
 
 // SFINAE logic
@@ -47,6 +50,12 @@ typename detail::enable_if<!std::is_trivially_default_constructible<T>::value>::
     ::new(detail::voidify(p)) T; //placement new
 }
 
+template <typename T, typename... Args>
+typename detail::enable_if<std::is_constructible<T, Args&& ...>::value>::type construct(T* p, Args&& ... args) {
+    std::cout << "constructing T with operation\n";
+    ::new(detail::voidify((p))) T(static_cast<Args&&>(args)...);
+}
+
 template <class T>
 void destroy(T*, typename detail::enable_if<std::is_trivially_destructible<T>::value>::type* = 0) {
     std::cout << "destorying trivially destructible T\n";
@@ -62,12 +71,56 @@ void destroy(T* t) {
     t->~T(); // placement destruct calling
 }
 
-template <class T, typename = std::enable_if_t<std::is_array<T>::value>>
+template <class T, typename = detail::enable_if_t<std::is_array<T>::value>>
 void destroy(T* t) {
     for (size_t i = 0; i < std::extent<T>::value; ++i) {
         destroy((*t)[i]);
     }
 }
+
+// Now illustrate a common mistake when using std::enable_if
+#if 0
+struct T{
+    enum {int_t, float_t} type;
+    template <typename Integer, typename = detail::enable_if_t<std::is_integral<Integer>::value>>
+            T(Integer) : type(int_t) {}
+    template <typename Floating, typename = detail::enable_if_t<std::is_floating_point<Floating>::value>>
+            T(Floating): type(float_t) {} // Error would be treated as redefinition from CPP-reference said
+};
+#else
+struct T{
+    enum {int_t, float_t} type;
+    template <typename Integer, typename detail::enable_if<std::is_integral<Integer>::value, bool>::type = true>
+            T(Integer) : type(int_t) {}
+    template <typename Floating, typename detail::enable_if<std::is_floating_point<Floating>::value, bool>::type = true>
+            T(Floating) : type(float_t) {}
+};
+#endif
+
+#if 0
+struct AA {
+    int m_int;
+    template <typename T, typename = detail::enable_if_t<std::is_same<T, int>::value>>
+        AA(T) : m_int(0) {}
+    template <typename T, typename = detail::enable_if_t<!std::is_same<T, int>::value>>
+        AA(T) : m_int(1) {}
+};
+#else
+struct AA {
+    int m_int;
+    template <typename T, detail::enable_if_t<std::is_same<T, int>::value, int> = 1>
+    AA(T) : m_int(0) {}
+    template <typename T, detail::enable_if_t<!std::is_same<T, int>::value, int> = 1>
+    AA(T) : m_int(1) {}
+};
+#endif
+
+template <class T, class Enable = void>
+class JJ {};
+
+template <class T>
+class JJ<T, typename detail::enable_if<std::is_floating_point<T>::value>::type> {};
+
 
 int main() {
 
@@ -81,11 +134,31 @@ int main() {
 
     // test2
     {
-        typename detail::enable_if<true, int>::type t; // OK
-        typename detail::enable_if<true>::type; // OK
-        typename detail::enable_if<false> {}; // OK
-        typename detail::enable_if<false>; // OK
+        // typename detail::enable_if<true, int>::type t; // OK
+        // typename detail::enable_if<true>::type; // OK
+        // typename detail::enable_if<false>{}; // OK
+        // typename detail::enable_if<false>; // OK
         // typename detail::enable_if<false, int>::type; // Error
+    }
+
+    // test3
+    {
+        JJ<int>{};
+        JJ<float>{};
+    }
+
+    // test4
+    {
+        union {
+            int i;
+            char s[sizeof(std::string)];
+        } u;
+        construct(reinterpret_cast<int*>(&u));
+        destroy(reinterpret_cast<int*>(&u));
+
+        construct(reinterpret_cast<std::string*>(&u), "Hello");
+        destroy(reinterpret_cast<std::string*>(&u));
+
     }
 
     return 0;
