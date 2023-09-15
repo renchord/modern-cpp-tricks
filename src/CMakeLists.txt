@@ -1,6 +1,8 @@
 
-set(exampleName enable_if)
-add_executable(${exampleName} test_enable_if.cpp)
+FUNCTION(TestExample exampleName file)
+    add_executable(${exampleName} ${file})
+ENDFUNCTION()
 
-set(exampleName crtp)
-add_executable(${exampleName} test_crtp_base.cpp)
+TestExample(enable_if test_enable_if.cpp)
+TestExample(crtp_base test_crtp_base.cpp)
+TestExample(is_detect test_is_detect.cpp)
