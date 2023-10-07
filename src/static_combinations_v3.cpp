@@ -5,7 +5,24 @@
 #include <array>
 #include <functional>
 #include <type_traits>
+
 static const int MAX_N = 9;
+
+template <int N, int K>
+struct comb_number {
+    static constexpr uint64_t value =
+            comb_number<N - 1, K>::value + comb_number<N - 1, K - 1>::value;
+};
+
+template <int N>
+struct comb_number<N, 0> {
+    static constexpr uint64_t value = 1;
+};
+
+template <int N>
+struct comb_number<N, N> {
+    static constexpr uint64_t value = 1;
+};
 
 using ret_t = std::array<std::array<uint64_t, MAX_N + 1>, MAX_N + 1>;
 
