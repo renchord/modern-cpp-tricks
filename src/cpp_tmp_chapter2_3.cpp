@@ -1,7 +1,6 @@
 //
 // Created by chordr on 10/7/2023.
 //
-
 #include <iostream>
 
 template <class T>
@@ -10,7 +9,6 @@ struct type_descriptor {
 
 template <class T>
 struct type_descriptor_impl {
-
 };
 
 template <class T>
@@ -19,11 +17,22 @@ std::ostream& operator<<(std::ostream& os, const type_descriptor<T>& m) {
 }
 
 template <class T>
+void getCorrectExtent(std::ostream& os) {
+    os << "[" << std::extent_v<T> << "]";
+    using nextT = std::remove_extent_t<T>;
+    if (std::is_array_v<nextT>) {
+        getCorrectExtent<nextT>(os);
+    }
+}
+
+template <class T>
 std::ostream& operator<<(std::ostream& os, const type_descriptor_impl<T>& m) {
     if (std::is_lvalue_reference_v<T>) {
         os << type_descriptor_impl<std::remove_reference_t<T>>() << "&";
     } else if (std::is_rvalue_reference_v<T>) {
         os << type_descriptor_impl<std::remove_reference_t<T>>() << "&&";
+    } else if (std::is_volatile_v<T>) {
+        os << type_descriptor_impl<std::remove_volatile_t<T>>() << " volatile";
     } else if (std::is_pointer_v<T>) {
         os << type_descriptor_impl<std::remove_pointer_t<T>>() << "*";
     } else if (std::is_const_v<T>) {
@@ -36,15 +45,22 @@ std::ostream& operator<<(std::ostream& os, const type_descriptor_impl<T>& m) {
         os << "long";
     } else if (std::is_same_v<short, T>) {
         os << "short";
+    } else if (std::is_array_v<T>) {
+        using nextT = std::remove_all_extents_t<T>;
+        os << type_descriptor_impl<nextT>();
+        getCorrectExtent<T>(os);
     }
     return os;
 }
-
 
 int main () {
     std::cout << type_descriptor<const int *>();
     std::cout << type_descriptor<char*>();
     std::cout << type_descriptor<const short&&>();
     std::cout << type_descriptor<long const* &>();
+    std::cout << type_descriptor<volatile int&&>();
+    std::cout << type_descriptor<int[3]>();
+    std::cout << type_descriptor<int[3][2]>();
+    std::cout << type_descriptor<int[3][2][2][5]>();
     return 0;
 }
