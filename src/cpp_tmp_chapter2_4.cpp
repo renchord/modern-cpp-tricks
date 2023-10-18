@@ -63,5 +63,7 @@ int main () {
     std::cout << type_descriptor<const short&>();
     std::cout << type_descriptor<long const * const & >();
     std::cout << type_descriptor<char&&>();
+
+    // i wanner not to impl array version.
     return 0;
 }
