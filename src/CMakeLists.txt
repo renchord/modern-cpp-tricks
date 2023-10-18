@@ -11,3 +11,4 @@ TestExample(static_comb2 static_combinations_v2.cpp)
 TestExample(static_comb3 static_combinations_v3.cpp)
 
 TestExample(cpp_tmp_2_3 cpp_tmp_chapter2_3.cpp)
+TestExample(cpp_tmp_2_4 cpp_tmp_chapter2_4.cpp)
