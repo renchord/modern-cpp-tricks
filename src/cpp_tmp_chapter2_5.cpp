@@ -1,6 +1,12 @@
 //
 // Created by chordr on 10/7/2023.
-//
+// 2-5. Change the type_descriptor template from exercise 2-3 to output a
+//     pseudo-English description of the type, along the lines of the explain
+//     command of the cdecl program:
+//// prints "array of pointer to function returning pointer to"
+////        "char"
+//std::cout << type_descriptor< char *(*[])() >();
+
 #include <iostream>
 
 template <class T>

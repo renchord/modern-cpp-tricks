@@ -1,4 +1,6 @@
 
+//2-4. Write an alternative solution for exercise 2-3 that does not use the
+//     Type Traits library.  Compare the solutions.
 #include <iostream>
 
 template <class T>

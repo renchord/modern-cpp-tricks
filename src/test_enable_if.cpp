@@ -122,8 +122,52 @@ template <class T>
 class JJ<T, typename detail::enable_if<std::is_floating_point<T>::value>::type> {};
 
 
-int main() {
 
+
+
+template <typename T, int Size>
+void f(T (&array)[Size]) {
+    std::cout << "1" << std::endl;
+}
+
+template <typename T, int Size>
+void f(T* array) {
+    std::cout << "2" << std::endl;
+}
+
+template <typename T>
+std::enable_if_t<std::is_pointer_v<T>>
+f (T ptr) {
+    std::cout << "3" << std::endl;
+}
+
+void sfinae_test() {
+    int array[3];
+    f(array);
+//    auto ptr = &array;
+//    f(ptr);
+}
+
+template<typename T>
+class A {
+    public:
+// this does not work because T depends on A, not on h
+    template<typename U>
+     void h(T,
+     std::enable_if_t<std::is_signed_v<T>, int> = 0) {
+        std::cout << "signed1";
+     }
+    template<typename R = T> // now R dependes on h
+    void h(R,
+           std::enable_if_t<std::is_signed_v<R>, int> = 0) {
+        std:: cout << "signed2";
+    }
+};
+
+
+int main() {
+    A<int> a;
+    a.template h(3);
     // test1
     {
         std::vector<int> nums;
@@ -161,5 +205,8 @@ int main() {
 
     }
 
+    sfinae_test();
+
     return 0;
 }
+
