@@ -13,3 +13,5 @@ TestExample(static_comb3 static_combinations_v3.cpp)
 TestExample(cpp_tmp_2_3 cpp_tmp_chapter2_3.cpp)
 TestExample(cpp_tmp_2_4 cpp_tmp_chapter2_4.cpp)
 TestExample(cpp_tmp_2_5 cpp_tmp_chapter2_5.cpp)
+
+TestExample(test_reference_wrapper test_reference_wrapper.cpp)
