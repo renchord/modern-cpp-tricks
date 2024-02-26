@@ -25,7 +25,6 @@ struct comb_number<N, N> {
 };
 
 using ret_t = std::array<std::array<uint64_t, MAX_N + 1>, MAX_N + 1>;
-
 constexpr ret_t compiler_time {
     []() {
         ret_t temp {};

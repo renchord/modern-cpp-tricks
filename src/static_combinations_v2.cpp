@@ -46,10 +46,21 @@ constexpr void test(std::integer_sequence<int, Is...>)
     (CombinationPrint<Is>(std::make_integer_sequence<int, Is> {}), ...);
 }
 
+template <typename T, T... Ints>
+void print_sequence(std::integer_sequence<T, Ints...> int_seq) {
+    std::cout << "The sequence of size " << int_seq.size() << " : ";
+    ((std::cout << Ints << ' '), ...);
+    std::cout << '\n';
+}
+
 
 int main()
 {
     auto index_sequence = std::make_integer_sequence<int, MAX_N + 1>{};
+
+    print_sequence(index_sequence);
+    std::cout << std::endl;
+
     test(index_sequence);
 
     for (int i = 0; i < MAX_N; ++i) {

@@ -37,5 +37,26 @@ struct B {};
 
 static_assert(has_type_match<A>::value);
 static_assert(!has_type_match<B>::value);
+
+
+namespace {
+    template <typename T, typename = void>
+    struct has_a_member : std::false_type  {
+
+    };
+    template <typename T>
+    struct has_a_member<T, std::void_t<decltype(T::a)>> : std::true_type {
+
+    };
+
+    struct AA {
+        int a;
+    };
+    struct BB {
+        int b;
+    };
+    static_assert(has_a_member<AA>::value);
+    static_assert(!has_a_member<BB>::value);
+}
 }
 

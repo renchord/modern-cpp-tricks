@@ -15,3 +15,16 @@ TestExample(cpp_tmp_2_4 cpp_tmp_chapter2_4.cpp)
 TestExample(cpp_tmp_2_5 cpp_tmp_chapter2_5.cpp)
 
 TestExample(test_reference_wrapper test_reference_wrapper.cpp)
+
+TestExample(template_basic_features template_basic_features.cpp)
+TestExample(variadic_template variadic_template.cpp)
+TestExample(template_param_deduction template_param_deduction.cpp)
+TestExample(template_action template_action.cpp)
+TestExample(my_shared_ptr my_shared_ptr.cpp)
+TestExample(advanced_topic_2 advanced_topic_2.cpp)
+
+TestExample(odd_even odd_even.cpp)
+TestExample(quick_sort quick_sort.cpp)
+TestExample(producer_consumer producer_consumer.cpp)
+TestExample(cache_estimate cache_estimate.cpp)
+TestExample(queue queue.cpp)
